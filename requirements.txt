@@ -1,0 +1,13 @@
+numpy
+pandas
+geopandas
+matplotlib
+seaborn
+scipy
+scikit-learn
+scikit-optimize
+networkx
+requests
+joblib
+tqdm
+colorama
