@@ -1,0 +1,268 @@
+{
+  "metadata": {
+    "titre": "Métriques de bifurcation (μ, β, R)",
+    "date_analyse": "2025-12-02 20:45:05",
+    "definitions": {
+      "mu": "Contribution totale reçue par la commune i (somme des lignes, moyenne sur toutes les dates)",
+      "beta": "Maximum des contributions totales émises (maximum des sommes de colonnes sur toutes les dates)",
+      "R": "μ_i × β (indicateur de bifurcation pour la commune i)"
+    }
+  },
+  "metriques_globales": {
+    "beta_global": 981.1657069940837,
+    "top_10_par_mu": [
+      {
+        "rang": 1,
+        "commune": "Bruxelles",
+        "mu": 51.09899066334728,
+        "R": 50136.57730088722
+      },
+      {
+        "rang": 2,
+        "commune": "Schaerbeek",
+        "mu": 40.13037967589534,
+        "R": 39374.55234664086
+      },
+      {
+        "rang": 3,
+        "commune": "Anderlecht",
+        "mu": 35.02179664972788,
+        "R": 34362.18587003329
+      },
+      {
+        "rang": 4,
+        "commune": "Ixelles",
+        "mu": 29.90650326248059,
+        "R": 29343.23541725264
+      },
+      {
+        "rang": 5,
+        "commune": "Molenbeek-Saint-Jean",
+        "mu": 28.964908718584574,
+        "R": 28419.375140889133
+      },
+      {
+        "rang": 6,
+        "commune": "Uccle",
+        "mu": 27.76481324509813,
+        "R": 27241.882617185405
+      },
+      {
+        "rang": 7,
+        "commune": "Forest (Bruxelles-Capitale)",
+        "mu": 19.23271847239384,
+        "R": 18870.483817384476
+      },
+      {
+        "rang": 8,
+        "commune": "Woluwe-Saint-Lambert",
+        "mu": 18.55568038975177,
+        "R": 18206.19726836705
+      },
+      {
+        "rang": 9,
+        "commune": "Saint-Gilles",
+        "mu": 15.790002985379571,
+        "R": 15492.60944258864
+      },
+      {
+        "rang": 10,
+        "commune": "Etterbeek",
+        "mu": 15.511438958126188,
+        "R": 15219.291971845456
+      }
+    ],
+    "top_10_par_R": [
+      {
+        "rang": 1,
+        "commune": "Bruxelles",
+        "R": 50136.57730088722,
+        "mu": 51.09899066334728
+      },
+      {
+        "rang": 2,
+        "commune": "Schaerbeek",
+        "R": 39374.55234664086,
+        "mu": 40.13037967589534
+      },
+      {
+        "rang": 3,
+        "commune": "Anderlecht",
+        "R": 34362.18587003329,
+        "mu": 35.02179664972788
+      },
+      {
+        "rang": 4,
+        "commune": "Ixelles",
+        "R": 29343.23541725264,
+        "mu": 29.90650326248059
+      },
+      {
+        "rang": 5,
+        "commune": "Molenbeek-Saint-Jean",
+        "R": 28419.375140889133,
+        "mu": 28.964908718584574
+      },
+      {
+        "rang": 6,
+        "commune": "Uccle",
+        "R": 27241.882617185405,
+        "mu": 27.76481324509813
+      },
+      {
+        "rang": 7,
+        "commune": "Forest (Bruxelles-Capitale)",
+        "R": 18870.483817384476,
+        "mu": 19.23271847239384
+      },
+      {
+        "rang": 8,
+        "commune": "Woluwe-Saint-Lambert",
+        "R": 18206.19726836705,
+        "mu": 18.55568038975177
+      },
+      {
+        "rang": 9,
+        "commune": "Saint-Gilles",
+        "R": 15492.60944258864,
+        "mu": 15.790002985379571
+      },
+      {
+        "rang": 10,
+        "commune": "Etterbeek",
+        "R": 15219.291971845456,
+        "mu": 15.511438958126188
+      }
+    ],
+    "toutes_communes": {
+      "Anderlecht": {
+        "mu": 35.02179664972788,
+        "R": 34362.18587003329
+      },
+      "Auderghem": {
+        "mu": 10.889614422775402,
+        "R": 10684.516234015398
+      },
+      "Berchem-Sainte-Agathe": {
+        "mu": 7.142226895458066,
+        "R": 7007.708101394273
+      },
+      "Bruxelles": {
+        "mu": 51.09899066334728,
+        "R": 50136.57730088722
+      },
+      "Etterbeek": {
+        "mu": 15.511438958126188,
+        "R": 15219.291971845456
+      },
+      "Evere": {
+        "mu": 13.572526995900832,
+        "R": 13316.898045629327
+      },
+      "Forest (Bruxelles-Capitale)": {
+        "mu": 19.23271847239384,
+        "R": 18870.483817384476
+      },
+      "Ganshoren": {
+        "mu": 6.10096622689893,
+        "R": 5986.058841362316
+      },
+      "Ixelles": {
+        "mu": 29.90650326248059,
+        "R": 29343.23541725264
+      },
+      "Jette": {
+        "mu": 14.38380486482743,
+        "R": 14112.896069463346
+      },
+      "Koekelberg": {
+        "mu": 7.24639861308103,
+        "R": 7109.917818364596
+      },
+      "Molenbeek-Saint-Jean": {
+        "mu": 28.964908718584574,
+        "R": 28419.375140889133
+      },
+      "Saint-Gilles": {
+        "mu": 15.790002985379571,
+        "R": 15492.60944258864
+      },
+      "Saint-Josse-ten-Noode": {
+        "mu": 7.252821836075155,
+        "R": 7116.220064494808
+      },
+      "Schaerbeek": {
+        "mu": 40.13037967589534,
+        "R": 39374.55234664086
+      },
+      "Uccle": {
+        "mu": 27.76481324509813,
+        "R": 27241.882617185405
+      },
+      "Watermael-Boitsfort": {
+        "mu": 7.585724746465253,
+        "R": 7442.852983928096
+      },
+      "Woluwe-Saint-Lambert": {
+        "mu": 18.55568038975177,
+        "R": 18206.19726836705
+      },
+      "Woluwe-Saint-Pierre": {
+        "mu": 12.308150032981953,
+        "R": 12076.334728899992
+      }
+    }
+  },
+  "metriques_locales": {
+    "corridors_spatiaux": {
+      "beta_local": 489.304781613459,
+      "communes_impliquees": [
+        "Bruxelles",
+        "Ixelles",
+        "Molenbeek-Saint-Jean",
+        "Anderlecht"
+      ],
+      "metriques_par_commune": [
+        {
+          "commune": "Bruxelles",
+          "mu_local": 30.062386951524587,
+          "R_local": 14709.669682095038
+        },
+        {
+          "commune": "Ixelles",
+          "mu_local": 16.307400367895067,
+          "R_local": 7979.288975696137
+        },
+        {
+          "commune": "Molenbeek-Saint-Jean",
+          "mu_local": 18.33079583908951,
+          "R_local": 8969.346054846596
+        },
+        {
+          "commune": "Anderlecht",
+          "mu_local": 21.975338712553413,
+          "R_local": 10752.638309627739
+        }
+      ]
+    },
+    "corridors_fonctionnels": {
+      "beta_local": 339.216490904968,
+      "communes_impliquees": [
+        "Bruxelles",
+        "Ixelles"
+      ],
+      "metriques_par_commune": [
+        {
+          "commune": "Bruxelles",
+          "mu_local": 21.517107713193692,
+          "R_local": 7298.957772893785
+        },
+        {
+          "commune": "Ixelles",
+          "mu_local": 13.059148400707949,
+          "R_local": 4429.878494695376
+        }
+      ]
+    }
+  }
+}

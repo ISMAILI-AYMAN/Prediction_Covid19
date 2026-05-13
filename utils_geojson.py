@@ -355,8 +355,7 @@ def log_resume_frontieres(
     """
     logger.info(f"Nombre de frontières calculées : {len(longueur_dict)}")
     logger.info(
-        f"{sum(1 for v in longueur_dict.values() 
-               if v == 0.0)} "
+        f"{sum(1 for v in longueur_dict.values() if v == 0.0)} "
         f"frontières nulles (0.0)"
     )
     # Seulement les 6 premières

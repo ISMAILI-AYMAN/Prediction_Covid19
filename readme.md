@@ -4,7 +4,8 @@ Ce projet a pour objectif de modéliser la **propagation des cas de COVID-19** d
 - en traitant les **données brutes**,
 - en les **lissant** et en construisant des **features** pertinentes,
 - en appliquant un **modèle Markov** et un **modèle supervisé**,
-- en visualisant les résultats sous forme de **heatmaps** et **graphes**.
+- en visualisant les résultats sous forme de **heatmaps** et **graphes**,
+- en prolongeant l’approche par une **lecture mésoscopique** : redistribution **GBM × proximité spatiale** et détection de **corridors épidémiques** (scripts `11_*` et `12_*` à la racine du dépôt).
 
 ## ✉️ Auteurs
 Projet réalisé par :
@@ -36,6 +37,14 @@ Benjamin, Nouredinne, Harry, Gasparino, Dimitry
     - **Heatmaps** (prédictions, cas réels, différence)
     - Graphe **NetworkX** des erreurs absolues moyennes
 
+7. **Distribution mésoscopique du GBM (proximité)**
+    - Redistribution des prédictions **Gradient Boosting** sur les communes voisines via une matrice de **proximité** (Markov × poids géographiques).
+    - Export des **matrices de distribution** par date (`gbm_proximity_distribution.json`) et figures associées (`visualizations_gbm_proximity/`).
+
+8. **Corridors épidémiques**
+    - Analyse de la **persistance temporelle** des flux, paramètres de **bifurcation** (β, μ) et identification des axes de propagation.
+    - Sorties JSON d’analyse / résumés / persistance / métriques et visualisations **Plotly** (`visualizations_corridors/`).
+
 
 ## **Visualisations produites**
 
@@ -48,6 +57,8 @@ Benjamin, Nouredinne, Harry, Gasparino, Dimitry
   - **Graphe des communes (NetworkX)** : 
     - nœuds : communes, taille et couleur selon l'erreur absolue moyenne
     - arêtes : poids de la matrice Markov (seuilés)
+  - **Distribution GBM–proximité** : graphiques (Matplotlib / Seaborn / Plotly) générés par le script racine `11_gbm_proximity_distribution.py` dans `visualizations_gbm_proximity/`.
+  - **Corridors épidémiques** : figures Plotly (flux, persistance, vues bipartites) dans `visualizations_corridors/` via `12_analyse_corridors_epidemiques.py`.
 
 
 ---
@@ -64,6 +75,12 @@ Benjamin, Nouredinne, Harry, Gasparino, Dimitry
 | `final_gb_model.joblib` | Modèle **Gradient Boosting** sélectionné comme final. |
 | `scaler_pred.joblib`, `scaler_total.joblib`, `scaler_mean.joblib` | **Scalers pour normaliser** les features du modèle (entraînés sur les données d'entraînement). |
 | `geographic_weights.json` | **Poids spatiaux** utilisés dans certains graphes ou expérimentations (non critique). |
+| `gbm_proximity_distribution.json` | **Matrices de distribution** GBM redistribuées par proximité (Markov × géographie), par date — produit par `11_gbm_proximity_distribution.py`. |
+| `corridors_epidemiques_analyse.json` | **Analyse détaillée** des corridors (séries, métriques) — `12_analyse_corridors_epidemiques.py`. |
+| `corridors_epidemiques_resume.json` | **Résumé textuel / structuré** de l’analyse des corridors. |
+| `corridors_identifies.json` | **Corridors identifiés** (agrégation des liens saillants). |
+| `corridors_metriques.json` | **Métriques** associées aux corridors (scores, statistiques). |
+| `corridors_persistance.json` | **Persistance temporelle** des éléments élevés dans les matrices de distribution. |
 
 ---
 
@@ -279,9 +296,25 @@ Ce dossier regroupe les scripts liés à :
 - **Graphe NetworkX** affiché et/ou **sauvegardé en PNG**.
 - Permet une analyse spatiale des erreurs du modèle.
 
+> **Note de numérotation :** le script **`12_analyse_corridors_epidemiques.py`** se trouve à la **racine** du dépôt (analyse mésoscopique / corridors). Le fichier homonyme de visualisation dans `geography/` est **`geography/12_graphe_de_relation_de_l_erreur_entre_prediction_et_reel.py`** (graphe d’erreurs) : rôles différents.
+
+### `11_gbm_proximity_distribution.py` *(racine du dépôt)*
+
+- Charge le **modèle GBM final**, les **scalers**, les **données lissées** et la **matrice Markov** optimale (`X_MEILLEUR_MODELE`).
+- Construit une **matrice de proximité** combinant transition Markov et **poids géographiques** (`geographic_weights.json`).
+- **Redistribue** la prédiction GBM de chaque commune sur les voisins selon cette proximité ; produit une série de **matrices par date**.
+- **Sorties principales :** `Data/gbm_proximity_distribution.json`, dossier **`visualizations_gbm_proximity/`** (figures Plotly / seaborn).
+
+### `12_analyse_corridors_epidemiques.py` *(racine du dépôt)*
+
+- S’appuie sur **`gbm_proximity_distribution.json`** pour identifier les **corridors épidémiques** (persistance sur *N* périodes consécutives, seuils dynamiques type percentile).
+- Calcule les indicateurs de **bifurcation** (β, μ) au niveau global et local, conformément au pipeline mésoscopique décrit dans `Pipeline_Mesoscopique_Explicatif.md`.
+- **Sorties principales :** `corridors_epidemiques_analyse.json`, `corridors_epidemiques_resume.json`, `corridors_persistance.json`, `corridors_identifies.json`, `corridors_metriques.json`, dossier **`visualizations_corridors/`** (Plotly ; export possible via **Kaleido**).
+
 Tous ces scripts utilisent :
 - **`pandas`** pour les manipulations,
 - **`seaborn` / `matplotlib`** pour les heatmaps,
+- **`plotly`** (et éventuellement **kaleido**) pour les visualisations interactives des scripts **11** et **12** à la racine,
 - **`networkx`** pour les graphes,
 - **`numpy`** pour les calculs.
 
@@ -295,7 +328,7 @@ Ils permettent de :
 ## **Installation**
 
 ### Prérequis
-Python ≥ **3.7** 
+Python ≥ **3.10** recommandé pour les scripts d’analyse **corridors** et **distribution GBM** à la racine ; le reste du projet reste compatible avec des versions antérieures (≥ 3.7) selon l’environnement.
 
 #### Packages nécessaires :
 - numpy
@@ -311,6 +344,8 @@ Python ≥ **3.7**
 - joblib
 - tqdm
 - colorama
+- plotly
+- kaleido *(export image des figures Plotly, optionnel mais recommandé)*
 
 # Liste des librairies utilisées et usages dans le projet
 
@@ -395,5 +430,13 @@ Python ≥ **3.7**
 - **Usage :** Affichage coloré dans le terminal (logs, état des traitements).
 - **Installation :** `pip install colorama`
   - [Comprendre les techniques de coloration de texte du terminal Python ?](https://www.tempmail.us.com/fr/python/affichage-de-texte-colore-dans-le-terminal-python)
+
+## `plotly`
+- **Usage :** Visualisations interactives (distribution GBM–proximité, corridors épidémiques).
+- **Installation :** `pip install plotly`
+
+## `kaleido`
+- **Usage :** Export PNG/SVG/PDF des figures Plotly (scripts racine 11 et 12).
+- **Installation :** `pip install kaleido`
 
 ---

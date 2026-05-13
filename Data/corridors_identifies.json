@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "titre": "Identification des corridors épidémiques",
+    "date_analyse": "2025-12-02 20:45:05",
+    "criteres_selection": {
+      "tri": [
+        "Durée de persistance (périodes consécutives)",
+        "Valeur moyenne (en cas d'égalité de durée)"
+      ],
+      "top_spatiaux": "Les 3 corridors adjacents avec la plus longue persistance",
+      "top_fonctionnels": "Les 2 corridors non adjacents avec la plus longue persistance"
+    }
+  },
+  "top_3_corridors_spatiaux": [
+    {
+      "rang": 1,
+      "source": "Bruxelles",
+      "target": "Anderlecht",
+      "type": "spatial",
+      "duree_periodes": 328,
+      "periode_debut": "2021-07-04",
+      "periode_fin": "2022-05-27",
+      "valeur_moyenne": 13.02746986181571,
+      "valeur_max": 102.17204674171593,
+      "indice_source": 3,
+      "indice_target": 0
+    },
+    {
+      "rang": 2,
+      "source": "Ixelles",
+      "target": "Bruxelles",
+      "type": "spatial",
+      "duree_periodes": 328,
+      "periode_debut": "2021-07-04",
+      "periode_fin": "2022-05-27",
+      "valeur_moyenne": 11.267722335346697,
+      "valeur_max": 77.18999222635888,
+      "indice_source": 8,
+      "indice_target": 3
+    },
+    {
+      "rang": 3,
+      "source": "Molenbeek-Saint-Jean",
+      "target": "Bruxelles",
+      "type": "spatial",
+      "duree_periodes": 327,
+      "periode_debut": "2021-07-04",
+      "periode_fin": "2022-05-26",
+      "valeur_moyenne": 13.370944192971782,
+      "valeur_max": 100.1839645413744,
+      "indice_source": 11,
+      "indice_target": 3
+    }
+  ],
+  "top_2_corridors_fonctionnels": [
+    {
+      "rang": 1,
+      "source": "Bruxelles",
+      "target": "Bruxelles",
+      "type": "fonctionnel",
+      "duree_periodes": 631,
+      "periode_debut": "2020-12-25",
+      "periode_fin": "2022-09-16",
+      "valeur_moyenne": 28.29276976557592,
+      "valeur_max": 308.68555850452543,
+      "indice_source": 3,
+      "indice_target": 3
+    },
+    {
+      "rang": 2,
+      "source": "Ixelles",
+      "target": "Ixelles",
+      "type": "fonctionnel",
+      "duree_periodes": 589,
+      "periode_debut": "2021-01-01",
+      "periode_fin": "2022-08-12",
+      "valeur_moyenne": 20.731815350258284,
+      "valeur_max": 167.95832377980997,
+      "indice_source": 8,
+      "indice_target": 8
+    }
+  ]
+}

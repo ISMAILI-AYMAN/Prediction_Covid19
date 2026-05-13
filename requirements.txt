@@ -11,3 +11,5 @@ requests
 joblib
 tqdm
 colorama
+plotly
+kaleido

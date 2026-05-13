@@ -34,6 +34,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import plotly.graph_objects as go
 
 # --- Modules locaux
 from utils_loader import charger_avec_cache
@@ -420,13 +421,139 @@ def sauvegarder_matrice_distribution(
 
 
 @log_debut_fin(logger)
+def visualiser_matrice_distribution_sankey(
+        matrice_distribution: np.ndarray,
+        communes: list[str],
+        date_str: str,
+        emplacement_dossier: str,
+        top_n: int = 3) -> None:
+    """
+    Génère un diagramme Sankey représentant les flux dominants entre communes.
+
+    Args:
+        matrice_distribution (np.ndarray): Matrice de distribution (19×19).
+        communes (list[str]): Liste des communes.
+        date_str (str): Date de la distribution.
+        emplacement_dossier (str): Dossier de sauvegarde.
+        top_n (int): Nombre de flux sortants principaux à afficher par commune (défaut: 3).
+
+    Note:
+        - Filtre les Top-N flux sortants pour chaque commune cible pour améliorer la lisibilité.
+        - Les flux sont représentés par des liens dont l'épaisseur correspond à la contribution.
+        - Les communes sources et cibles sont représentées comme des nœuds.
+        - Sauvegarde au format HTML (interactif) et PNG (statique).
+    """
+    try:
+        logger.debug(f"Génération du diagramme Sankey pour {date_str} (Top-{top_n} flux)")
+
+        # Créer le dossier si nécessaire
+        os.makedirs(emplacement_dossier, exist_ok=True)
+
+        # Préparer les données pour Sankey
+        # Pour chaque commune cible, extraire les Top-N flux sortants
+        source_indices = []
+        target_indices = []
+        values = []
+        labels = communes.copy()
+
+        # Parcourir chaque commune cible (ligne de la matrice)
+        for target_idx, commune_target in enumerate(communes):
+            # Obtenir toutes les contributions vers cette commune cible
+            contributions = matrice_distribution[target_idx, :]
+            
+            # Ignorer les contributions nulles
+            non_zero_indices = np.where(contributions > 0)[0]
+            if len(non_zero_indices) == 0:
+                continue
+            
+            # Trier par contribution décroissante et prendre les Top-N
+            sorted_indices = non_zero_indices[np.argsort(contributions[non_zero_indices])[::-1]]
+            top_indices = sorted_indices[:top_n]
+            
+            # Ajouter les flux filtrés
+            for source_idx in top_indices:
+                if matrice_distribution[target_idx, source_idx] > 0:
+                    source_indices.append(source_idx)
+                    target_indices.append(target_idx)
+                    values.append(float(matrice_distribution[target_idx, source_idx]))
+
+        if len(values) == 0:
+            logger.warning(f"Aucun flux détecté pour {date_str}, diagramme Sankey non généré")
+            return
+
+        # Normaliser les valeurs pour les couleurs (0-1)
+        max_val = max(values) if values else 1.0
+        normalized_values = [v / max_val for v in values]
+        
+        # Créer les couleurs des liens (gradient rouge/orange selon l'intensité)
+        link_colors = []
+        for norm_val in normalized_values:
+            # Gradient de rouge (intense) à orange (faible)
+            r = int(255)
+            g = int(100 + (155 * (1 - norm_val)))  # Plus intense = plus rouge
+            b = int(50 * (1 - norm_val))
+            link_colors.append(f"rgba({r},{g},{b},0.7)")
+
+        # Créer le diagramme Sankey
+        fig = go.Figure(data=[go.Sankey(
+            node=dict(
+                pad=15,
+                thickness=20,
+                line=dict(color="black", width=0.5),
+                label=labels,
+                color="lightblue"
+            ),
+            link=dict(
+                source=source_indices,
+                target=target_indices,
+                value=values,
+                color=link_colors
+            )
+        )])
+
+        fig.update_layout(
+            title_text=f"Flux de propagation COVID-19 - {date_str}<br>"
+                      f"<sub>Top-{top_n} flux sortants par commune cible</sub>",
+            font_size=12,
+            height=900,
+            width=1400
+        )
+
+        # Sauvegarder en HTML (interactif)
+        filename_html = os.path.join(
+            emplacement_dossier,
+            f"gbm_sankey_{date_str.replace('-', '_')}.html"
+        )
+        fig.write_html(filename_html)
+        logger.info(f"Diagramme Sankey (HTML) sauvegardé : {filename_html}")
+
+        # Sauvegarder en PNG (statique) - nécessite kaleido
+        try:
+            filename_png = os.path.join(
+                emplacement_dossier,
+                f"gbm_sankey_{date_str.replace('-', '_')}.png"
+            )
+            fig.write_image(filename_png, width=1400, height=900, scale=2)
+            logger.info(f"Diagramme Sankey (PNG) sauvegardé : {filename_png}")
+        except Exception as e:
+            logger.warning(
+                f"Impossible de sauvegarder en PNG (kaleido requis) : {e}. "
+                f"Le fichier HTML est toujours disponible : {filename_html}"
+            )
+
+    except Exception as e:
+        logger.error(f"Erreur lors de la génération du diagramme Sankey : {e}", exc_info=True)
+        raise
+
+
+@log_debut_fin(logger)
 def visualiser_matrice_distribution(
         matrice_distribution: np.ndarray,
         communes: list[str],
         date_str: str,
         emplacement_dossier: str) -> None:
     """
-    Génère une heatmap de la matrice de distribution.
+    Génère une heatmap de la matrice de distribution (méthode alternative).
 
     Args:
         matrice_distribution (np.ndarray): Matrice de distribution (19×19).
@@ -438,6 +565,7 @@ def visualiser_matrice_distribution(
         - X-axis: Communes sources (contribuant).
         - Y-axis: Communes cibles (recevant).
         - Intensité de couleur: Coefficient de contribution (plus élevé = plus foncé).
+        - Méthode alternative aux diagrammes Sankey pour visualisation matricielle complète.
     """
     try:
         logger.debug(f"Génération de la heatmap pour {date_str}")
@@ -502,13 +630,19 @@ def main() -> None:
     """
     Fonction principale orchestrant le pipeline complet.
 
+    IMPORTANT: Pour une analyse correcte des corridors épidémiques, le script
+    traite TOUTES les dates journalières de la période d'entraînement du modèle GBM,
+    sans échantillonnage. Cela garantit une granularité temporelle complète pour
+    identifier les axes de propagation dominants.
+
     Étapes:
         1. Charge toutes les données nécessaires.
         2. Construit la matrice de proximité combinée.
-        3. Génère les prédictions GBM pour une plage de dates.
+        3. Génère les prédictions GBM pour toutes les dates journalières
+           de la période d'entraînement.
         4. Distribue les prédictions selon la matrice de proximité.
-        5. Sauvegarde les résultats en JSON.
-        6. Génère des heatmaps pour des dates clés.
+        5. Sauvegarde les résultats en JSON (toutes les dates).
+        6. Génère des heatmaps pour un échantillon de dates clés.
         7. Affiche des statistiques de synthèse.
     """
     try:
@@ -523,12 +657,19 @@ def main() -> None:
             X_MEILLEUR_MODELE, poids_geo, COMMUNES_LIST, alpha
         )
 
-        # 3. Obtenir les dates disponibles
+        # 3. Obtenir les dates disponibles (même période que l'entraînement)
+        # IMPORTANT: Pour l'analyse des corridors épidémiques, utiliser TOUTES les dates
+        # avec une granularité journalière, correspondant à la période d'entraînement du modèle.
         dates_disponibles = sorted(DONNEES_LISSEES.keys())
-        # Traiter un échantillon (par exemple, une date par mois) pour éviter un traitement trop long
-        # Pour un traitement complet, utiliser toutes les dates
-        dates_a_traiter = dates_disponibles[::30]  # Une date tous les 30 jours
-        logger.info(f"Traitement de {len(dates_a_traiter)} dates sur {len(dates_disponibles)} disponibles")
+        # Utiliser toutes les dates sauf la dernière (pour éviter index out of range)
+        # comme dans enrichir_le_dataset qui utilise DATES_LISSEES[:-1]
+        dates_a_traiter = dates_disponibles[:-1]  # Toutes les dates quotidiennes
+        logger.info(
+            f"Traitement de {len(dates_a_traiter)} dates journalières "
+            f"sur {len(dates_disponibles)} disponibles "
+            f"(période d'entraînement du modèle GBM)"
+        )
+        logger.info(f"Première date: {dates_a_traiter[0]}, Dernière date: {dates_a_traiter[-1]}")
 
         # 4. Générer les matrices de distribution
         matrices_par_date = generer_matrices_distribution(
@@ -540,15 +681,25 @@ def main() -> None:
             matrices_par_date, COMMUNES_LIST, EMPLACEMENT_SORTIE_JSON, alpha
         )
 
-        # 6. Générer des heatmaps pour des dates clés (échantillon)
+        # 6. Générer des visualisations Sankey pour des dates clés (échantillon)
+        # Note: Toutes les données sont sauvegardées dans le JSON.
+        # Les diagrammes Sankey sont générés pour un échantillon représentatif.
+        # Pour un traitement complet, toutes les dates sont dans le JSON.
+        # Les diagrammes Sankey montrent les Top-3 flux sortants par commune cible.
         dates_cles = dates_a_traiter[::len(dates_a_traiter)//10] if len(dates_a_traiter) > 10 else dates_a_traiter[:5]
+        logger.info(
+            f"Génération de {len(dates_cles)} diagrammes Sankey (échantillon, Top-3 flux) "
+            f"sur {len(matrices_par_date)} dates traitées"
+        )
         for date_str in dates_cles:
             if date_str in matrices_par_date:
-                visualiser_matrice_distribution(
+                # Générer le diagramme Sankey (recommandé pour l'analyse des corridors)
+                visualiser_matrice_distribution_sankey(
                     matrices_par_date[date_str],
                     COMMUNES_LIST,
                     date_str,
-                    EMPLACEMENT_VISUALISATIONS
+                    EMPLACEMENT_VISUALISATIONS,
+                    top_n=3
                 )
 
         # 7. Statistiques de synthèse
